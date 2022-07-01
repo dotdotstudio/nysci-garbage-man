@@ -1,4 +1,4 @@
-import { LEVEL, OBJECT_TYPE } from './setup';
+import { DIFFICULTY_LEVEL, LEVEL, OBJECT_TYPE } from './setup';
 import { randomMovement } from './ghostmoves';
 // Classes
 import GameBoard from './GameBoard';
@@ -11,15 +11,21 @@ import soundGameStart from './sounds/game_start.wav';
 import soundGameOver from './sounds/death.wav';
 import soundGhost from './sounds/eat_ghost.wav';
 // Dom Elements
+const landingPage = document.querySelector('#landing-page');
+const levelOnePointer = document.querySelector('#level-one-selector');
+const levelTwoPointer = document.querySelector('#level-two-selector');
+const levelThreePointer = document.querySelector('#level-three-selector');
+const gamePage = document.querySelector('#game-page');
 const gameGrid = document.querySelector('#game');
 const scoreTable = document.querySelector('#score');
-const startButton = document.querySelector('#start-button');
-const levelSelect = document.querySelector('#level-select');
 const timerDisplay = document.querySelector('#game-timer');
 
 // Game constants
 const POWER_PILL_TIME = 10000; // ms
-const GLOBAL_SPEED = 140; // ms
+const GLOBAL_SPEED = 120; // ms
+
+landing()
+
 const gameBoard = GameBoard.createGameBoard(gameGrid, LEVEL);
 // Initial setup
 let score = 0;
@@ -29,6 +35,68 @@ let powerPillActive = false;
 let powerPillTimer = null;
 let gameTime = 0;
 let gameTimer;
+let levelSelected = 1;
+
+
+//shows landing page
+function landing() {
+
+  landingPage.classList.add('show');
+  gamePage.classList.add('hide');
+
+  levelTwoPointer.classList.add('hide');
+  levelThreePointer.classList.add('hide');
+
+  document.addEventListener('keydown', e => handleKeyInput(e));
+}
+
+const handleKeyInput = (e) => {
+
+  if (e.keyCode === 38) {
+    levelSelected--
+  } else if (e.keyCode === 40) {
+    levelSelected++
+  } else if (e.keyCode === 13) {
+    // document.removeEventListener('keydown', (e) =>
+    //   handleKeyInput(e)
+    // );
+    landingPage.classList.remove('show');
+    landingPage.classList.add('hide');
+    gamePage.classList.remove('hide');
+    gamePage.classList.add('show');
+
+    startGame(levelSelected);
+  } else {
+    return;
+  }
+
+  if (levelSelected < 1)
+    levelSelected = 3
+  if (levelSelected > 3)
+    levelSelected = 1
+
+  levelOnePointer.classList.remove('show', 'hide');
+  levelTwoPointer.classList.remove('show', 'hide');
+  levelThreePointer.classList.remove('show', 'hide');
+
+  switch (levelSelected) {
+    case 1:
+      levelOnePointer.classList.add('show');
+      levelTwoPointer.classList.add('hide');
+      levelThreePointer.classList.add('hide');
+      break;
+    case 2:
+      levelOnePointer.classList.add('hide');
+      levelTwoPointer.classList.add('show');
+      levelThreePointer.classList.add('hide');
+      break;
+    case 3:
+      levelOnePointer.classList.add('hide');
+      levelTwoPointer.classList.add('hide');
+      levelThreePointer.classList.add('show');
+      break;
+  }
+};
 
 // --- AUDIO --- //
 function playAudio(audio) {
@@ -48,8 +116,8 @@ function gameOver(pacman, grid) {
   gameBoard.showGameStatus(gameWin);
 
   clearInterval(timer);
-  // Show startbutton
-  startButton.classList.remove('hide');
+
+  setTimeout(() => location.reload(), 5000);
 }
 
 function checkCollision(pacman, ghosts) {
@@ -79,13 +147,13 @@ function gameLoop(pacman, ghosts) {
 
   // 2. Check Ghost collision on the old positions
   // checkCollision(pacman, ghosts);
-  
+
   // 3. Move ghosts
   ghosts.forEach((ghost) => gameBoard.moveCharacter(ghost));
-  
+
   // 4. Do a new ghost collision check on the new positions
   // checkCollision(pacman, ghosts);
-  
+
   // 5. Check if Pacman eats a dot
   if (gameBoard.objectExist(pacman.pos, OBJECT_TYPE.DOT)) {
     playAudio(soundDot);
@@ -96,7 +164,7 @@ function gameLoop(pacman, ghosts) {
     // Add Score
     score += 10;
   }
-  
+
   // 6. Check if Pacman eats a power pill
   if (gameBoard.objectExist(pacman.pos, OBJECT_TYPE.PILL)) {
     playAudio(soundPill);
@@ -112,27 +180,33 @@ function gameLoop(pacman, ghosts) {
       POWER_PILL_TIME
     );
   }
-  
+
   // 7. Change ghost scare mode depending on powerpill
   if (pacman.powerPill !== powerPillActive) {
     powerPillActive = pacman.powerPill;
     ghosts.forEach((ghost) => (ghost.isScared = pacman.powerPill));
   }
-  
+
   // 8. Check if all dots have been eaten
   if (gameBoard.dotCount === 0) {
     gameWin = true;
     gameOver(pacman, gameGrid);
   }
-  
+
   // 9. Show new score
   scoreTable.innerHTML = score;
 
   //10. Display time elapsed
-  timerDisplay.innerHTML = `${Math.floor(gameTime/60).toString().padStart(2,'0')}: ${(gameTime%60).toString().padStart(2,'0')}`;
+  timerDisplay.innerHTML = `${Math.floor(gameTime / 60).toString().padStart(2, '0')}: ${(gameTime % 60).toString().padStart(2, '0')}`;
+
+  //11. check if garbageman is completely blocked
+  if (gameBoard.isPacmanCompletelyBlocked(pacman))
+    gameOver(pacman, gameGrid);
 }
 
 function startGame(difficultyLevel) {
+
+  document.removeEventListener('keydown', e => handleKeyInput(e));
 
   gameTimer = setInterval(() => gameTime++, 1000);
   playAudio(soundGameStart);
@@ -140,8 +214,6 @@ function startGame(difficultyLevel) {
   gameWin = false;
   powerPillActive = false;
   score = 0;
-
-  levelSelect.classList.add('hide');
 
   gameBoard.createGrid(LEVEL, difficultyLevel);
 
@@ -165,12 +237,7 @@ function startGame(difficultyLevel) {
   ];
 
   ghosts.length = difficultyLevel * 3;
+
   // Gameloop
   timer = setInterval(() => gameLoop(pacman, ghosts), GLOBAL_SPEED / difficultyLevel);
 }
-
-// Initialize game
-levelSelect.addEventListener('change', (e) => {
-  if (e.target.value)
-    startGame(e.target.value);
-})

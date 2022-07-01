@@ -11,7 +11,7 @@ class Ghost {
     this.speed = speed;
     this.timer = 0;
     this.isScared = false;
-    this.rotation = false;
+    this.rotation = true;
   }
 
   shouldMove() {

@@ -96,6 +96,10 @@ class GameBoard {
     }
   }
 
+  isPacmanCompletelyBlocked(pacman) {
+    return pacman.isPacmanCompletelyBlocked(this.objectExist.bind(this));
+  }
+
   static createGameBoard(DOMGrid, level) {
     const board = new this(DOMGrid);
     board.createGrid(level);

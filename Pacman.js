@@ -59,6 +59,19 @@ class Pacman {
     if (objectExist(nextMovePos, OBJECT_TYPE.WALL)) return;
     this.dir = dir;
   };
+
+  isPacmanCompletelyBlocked(objectExist) {
+    let dirKeys = Object.keys(DIRECTIONS);
+    let isCompletelyBlocked = dirKeys.every(key => {
+      let dir = DIRECTIONS[key];
+      const correspondingPos = this.pos + dir.movement;
+      if (objectExist(correspondingPos, OBJECT_TYPE.WALL) ||
+        objectExist(correspondingPos, OBJECT_TYPE.GHOST) ||
+        objectExist(correspondingPos, OBJECT_TYPE.GHOSTLAIR)) return true;
+      else return false;
+    })
+    return isCompletelyBlocked;
+  }
 }
 
 export default Pacman;
