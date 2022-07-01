@@ -1,23 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css">
-    <title>JS Pacman</title>
-  </head>
-  <body>
-    <div id="wrapper">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+  <title>JS Pacman</title>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="landing-page">
+      <ul style="list-style: none;position: fixed; bottom: 10rem; right: 15rem;">
+        <li><img id="level-one-selector" style="padding-bottom: 1rem;" src="./images/garbage-pacman-landing-indicator.png" alt=""><img src="./images/level1.png" alt=""></li>
+        <li><img id="level-two-selector" style="padding-bottom: 1rem;" src="./images/garbage-pacman-landing-indicator.png" alt=""><img src="./images/level2.png" alt=""></li>
+        <li><img id="level-three-selector" style="padding-bottom: 1rem;" src="./images/garbage-pacman-landing-indicator.png" alt=""><img src="./images/level3.png" alt=""></li>
+      </ul>
+    </div>
+    <div id="game-page">
       <div id="game"></div>
       <div id="game-timer" class="game-timer">00:00</div>
       <div id="score"></div>
-      <select name="level-select" id="level-select">
-        <option value="">Start Game</option>
-        <option value="1">Level 1</option>
-        <option value="2">Level 2</option>
-        <option value="3">Level 3</option>
-      </select>
     </div>
-    <script src="./index.js"></script>
-  </body>
+  </div>
+  <script src="./index.js"></script>
+</body>
+
 </html>
