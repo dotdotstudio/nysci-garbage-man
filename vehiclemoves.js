@@ -10,10 +10,10 @@ export function randomMovement(position, direction, objectExist) {
   let iterationCount = 0;
   while (
     objectExist(nextMovePos, OBJECT_TYPE.WALL) ||
-    objectExist(nextMovePos, OBJECT_TYPE.GHOST) ||
-    objectExist(nextMovePos, OBJECT_TYPE.PACMAN)
+    objectExist(nextMovePos, OBJECT_TYPE.VEHICLE) ||
+    objectExist(nextMovePos, OBJECT_TYPE.GARBAGEMAN)
   ) {
-    if (!objectExist(nextMovePos, OBJECT_TYPE.PACMAN) && iterationCount < 10) {
+    if (!objectExist(nextMovePos, OBJECT_TYPE.GARBAGEMAN) && iterationCount < 10) {
       // Get a random key from that array
       const key = keys[Math.floor(Math.random() * keys.length)];
       // Set the new direction

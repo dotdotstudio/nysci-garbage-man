@@ -2,10 +2,16 @@
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: gamingFont;
+  src: url(RetroGamingFont.ttf);
+}
+
 body {
-  background: url('./background.jpg') no-repeat center fixed;
+  background: url('./images/background.jpg') no-repeat center fixed;
   background-size: cover;
   margin: 0;
+  font-family: gamingFont;
 }
 
 #wrapper {
@@ -17,32 +23,32 @@ body {
 }
 
 #landing-page {
-  background: url('./images/garbage-pacman-landing-background.png') no-repeat center fixed;
+  background: url('./images/landing-background.png') no-repeat center fixed;
   background-size: cover;
   width: 100%;
   height: 100vh;
-  font-size: xxx-large;
+  font-size: xx-large;
   color: white;
 }
 
-#landing-page li{
+#landing-page li {
   position: relative;
 }
 
-#level-one-selector, #level-two-selector, #level-three-selector{
+#level-one-selector,
+#level-two-selector,
+#level-three-selector {
   position: absolute;
   left: -56px;
   top: 23px;
 }
 
-#game-page {
-
-}
+#game-page {}
 
 #game {
   position: relative;
   display: inline-grid;
-  background: url(./images/pacman-background.png) no-repeat;
+  background: url(./images/gameboard.png) no-repeat;
 }
 
 .game-status {
@@ -79,72 +85,48 @@ body {
   margin-top: 20px;
 }
 
-#level-select {
-  margin-top: 20px;
-}
-
 .hide {
   display: none;
-}
-
-.hide2 {
-  visibility: hidden;
 }
 
 .show {
   display: initial;
 }
 
-.show2 {
-  visibility: visible;
-}
-
 .square {
   display: block;
 }
 
-.dot {
-  background: url(./images/garbage-bin-dot.png) no-repeat;
+.bin {
+  background: url(./images/garbage-bin.png) no-repeat;
   background-position: 8px 6px;
   background-size: 70%;
-  /* border: 8px solid black;
-  border-radius: 50%; */
 }
 
-.pill {
-  background: white;
-  border: 5px solid black;
-  border-radius: 50%;
-}
-
-.ghost {
+.vehicle {
   position: relative;
   border-radius: 10px 10px 2px 2px;
   border: none;
 }
 
-.scared {
-  background: blue !important;
-}
-
-.blinky {
+.lorry {
   background: url(./images/vehicle-lorry.png) no-repeat;
 }
 
-.pinky {
+.taxi {
   background: url(./images/vehicle-taxi.png) no-repeat;
 }
 
-.inky {
+.policecar {
   background: url(./images/vehicle-police-car.png) no-repeat;
 }
 
-.clyde {
+.taxiTwo {
   background: url(./images/vehicle-taxi.png) no-repeat;
 }
 
-.pacman {
-  background: url(./images/pacman.png) no-repeat;
+.garbageman {
+  background: url(./images/garbageman.png) no-repeat;
 }
 
 .game-timer {

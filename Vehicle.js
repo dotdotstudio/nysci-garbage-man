@@ -1,7 +1,6 @@
 import { DIRECTIONS, OBJECT_TYPE } from './setup';
-import { randomMovement } from './ghostmoves';
 
-class Ghost {
+class Vehicle {
   constructor(speed = 5, startPos, movement, name) {
     this.name = name;
     this.movement = movement;
@@ -10,7 +9,6 @@ class Ghost {
     this.dir = DIRECTIONS.ArrowRight;
     this.speed = speed;
     this.timer = 0;
-    this.isScared = false;
     this.rotation = true;
   }
 
@@ -33,10 +31,8 @@ class Ghost {
   }
 
   makeMove() {
-    const classesToRemove = [OBJECT_TYPE.GHOST, OBJECT_TYPE.SCARED, this.name];
-    let classesToAdd = [OBJECT_TYPE.GHOST, this.name];
-
-    if (this.isScared) classesToAdd = [...classesToAdd, OBJECT_TYPE.SCARED];
+    const classesToRemove = [OBJECT_TYPE.VEHICLE, this.name];
+    let classesToAdd = [OBJECT_TYPE.VEHICLE, this.name];
 
     return { classesToRemove, classesToAdd };
   }
@@ -47,4 +43,4 @@ class Ghost {
   }
 }
 
-export default Ghost;
+export default Vehicle;

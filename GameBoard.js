@@ -2,7 +2,7 @@ import { GRID_SIZE, CELL_SIZE, OBJECT_TYPE, CLASS_LIST, DIFFICULTY_LEVEL } from 
 
 class GameBoard {
   constructor(DOMGrid) {
-    this.dotCount = 0;
+    this.binCount = 0;
     this.grid = [];
     this.DOMGrid = DOMGrid;
   }
@@ -16,35 +16,35 @@ class GameBoard {
   }
 
   createGrid(level, difficultyLevel) {
-    this.dotCount = 0;
+    this.binCount = 0;
     this.grid = [];
     this.DOMGrid.innerHTML = '';
     // First set correct amount of columns based on Grid Size and Cell Size
     this.DOMGrid.style.cssText = `grid-template-columns: repeat(${GRID_SIZE}, ${CELL_SIZE}px);`;
 
-    const indexOfDot = CLASS_LIST.indexOf(OBJECT_TYPE.DOT);
+    const indexOfBin = CLASS_LIST.indexOf(OBJECT_TYPE.BIN);
     const indexOfBlank = CLASS_LIST.indexOf(OBJECT_TYPE.BLANK);
 
-    let originalDotCount = 0;
+    let originalBinCount = 0;
     level.forEach((square) => {
-      if (square === indexOfDot) {
+      if (square === indexOfBin) {
         if (!difficultyLevel) {
           square = indexOfBlank
         } else {
           switch (difficultyLevel) {
             case DIFFICULTY_LEVEL.LEVEL_ONE:
-              if (originalDotCount % 3 !== 0)
+              if (originalBinCount % 3 !== 0)
                 square = indexOfBlank
               break;
             case DIFFICULTY_LEVEL.LEVEL_TWO:
-              if (originalDotCount % 2 !== 0)
+              if (originalBinCount % 2 !== 0)
                 square = indexOfBlank
               break;
             case DIFFICULTY_LEVEL.LEVEL_THREE:
-              square = indexOfDot
+              square = indexOfBin
               break;
           }
-          originalDotCount++;
+          originalBinCount++;
         }
       }
 
@@ -54,8 +54,8 @@ class GameBoard {
       this.DOMGrid.appendChild(div);
       this.grid.push(div);
 
-      // Add dots
-      if (CLASS_LIST[square] === OBJECT_TYPE.DOT) this.dotCount++;
+      // Add bins
+      if (CLASS_LIST[square] === OBJECT_TYPE.BIN) this.binCount++;
     });
   }
 
@@ -80,11 +80,12 @@ class GameBoard {
       const { nextMovePos, direction } = character.getNextMove(
         this.objectExist.bind(this)
       );
+
       const { classesToRemove, classesToAdd } = character.makeMove();
 
       if (character.rotation && nextMovePos !== character.pos) {
         // Rotate
-        this.rotateDiv(nextMovePos, character.dir.rotation);
+        this.rotateDiv(nextMovePos, direction.rotation);
         // Rotate the previous div back
         this.rotateDiv(character.pos, 0);
       }
@@ -96,8 +97,8 @@ class GameBoard {
     }
   }
 
-  isPacmanCompletelyBlocked(pacman) {
-    return pacman.isPacmanCompletelyBlocked(this.objectExist.bind(this));
+  isGarbagemanCompletelyBlocked(garbageman) {
+    return garbageman.isGarbagemanCompletelyBlocked(this.objectExist.bind(this));
   }
 
   static createGameBoard(DOMGrid, level) {
