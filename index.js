@@ -1,17 +1,17 @@
-import { DIFFICULTY_LEVEL, LEVEL, OBJECT_TYPE } from './setup';
-import { randomMovement } from './ghostmoves';
+import { LEVEL, OBJECT_TYPE } from './setup';
+import { randomMovement } from './vehiclemoves';
 // Classes
 import GameBoard from './GameBoard';
-import Pacman from './Pacman';
-import Ghost from './Ghost';
+import Garbageman from './Garbageman';
+import Vehicle from './Vehicle';
 // Sounds
 import soundDot from './sounds/munch.wav';
-import soundPill from './sounds/pill.wav';
 import soundGameStart from './sounds/game_start.wav';
 import soundGameOver from './sounds/death.wav';
-import soundGhost from './sounds/eat_ghost.wav';
 // Dom Elements
 const landingPage = document.querySelector('#landing-page');
+const lastScoreCont = document.querySelector('#last-score');
+const hiScoreCont = document.querySelector('#hi-score');
 const levelOnePointer = document.querySelector('#level-one-selector');
 const levelTwoPointer = document.querySelector('#level-two-selector');
 const levelThreePointer = document.querySelector('#level-three-selector');
@@ -21,7 +21,6 @@ const scoreTable = document.querySelector('#score');
 const timerDisplay = document.querySelector('#game-timer');
 
 // Game constants
-const POWER_PILL_TIME = 10000; // ms
 const GLOBAL_SPEED = 120; // ms
 
 landing()
@@ -31,8 +30,6 @@ const gameBoard = GameBoard.createGameBoard(gameGrid, LEVEL);
 let score = 0;
 let timer = null;
 let gameWin = false;
-let powerPillActive = false;
-let powerPillTimer = null;
 let gameTime = 0;
 let gameTimer;
 let levelSelected = 1;
@@ -40,6 +37,10 @@ let levelSelected = 1;
 
 //shows landing page
 function landing() {
+  let lastScore = sessionStorage.getItem('lastScore');
+  let hiScore = sessionStorage.getItem('hiScore');
+  lastScoreCont.innerHTML = lastScore ?? 0;
+  hiScoreCont.innerHTML = hiScore ?? 0;
 
   landingPage.classList.add('show');
   gamePage.classList.add('hide');
@@ -47,10 +48,10 @@ function landing() {
   levelTwoPointer.classList.add('hide');
   levelThreePointer.classList.add('hide');
 
-  document.addEventListener('keydown', e => handleKeyInput(e));
+  document.addEventListener('keydown', handleKeyInput);
 }
 
-const handleKeyInput = (e) => {
+function handleKeyInput(e) {
 
   if (e.keyCode === 38) {
     levelSelected--
@@ -105,139 +106,95 @@ function playAudio(audio) {
 }
 
 // --- GAME CONTROLLER --- //
-function gameOver(pacman, grid) {
+function gameOver(garbageman, grid) {
   clearInterval(gameTimer);
   playAudio(soundGameOver);
 
   document.removeEventListener('keydown', (e) =>
-    pacman.handleKeyInput(e, gameBoard.objectExist.bind(gameBoard))
+    garbageman.handleKeyInput(e, gameBoard.objectExist.bind(gameBoard))
   );
 
   gameBoard.showGameStatus(gameWin);
 
   clearInterval(timer);
 
+  let lastScore = sessionStorage.getItem('lastScore');
+  if (score > lastScore)
+    sessionStorage.setItem('hiScore', score);
+
+  sessionStorage.setItem('lastScore', score);
+
   setTimeout(() => location.reload(), 5000);
 }
 
-function checkCollision(pacman, ghosts) {
-  const collidedGhost = ghosts.find((ghost) => pacman.pos === ghost.pos);
+function gameLoop(garbageman, vehicles) {
+  // 1. Move Garbageman
+  gameBoard.moveCharacter(garbageman);
 
-  if (collidedGhost) {
-    if (pacman.powerPill) {
-      playAudio(soundGhost);
-      gameBoard.removeObject(collidedGhost.pos, [
-        OBJECT_TYPE.GHOST,
-        OBJECT_TYPE.SCARED,
-        collidedGhost.name
-      ]);
-      collidedGhost.pos = collidedGhost.startPos;
-      score += 100;
-    } else {
-      gameBoard.removeObject(pacman.pos, [OBJECT_TYPE.PACMAN]);
-      gameBoard.rotateDiv(pacman.pos, 0);
-      gameOver(pacman, gameGrid);
-    }
-  }
-}
+  // 2. Move vehicles
+  vehicles.forEach((vehicle) => gameBoard.moveCharacter(vehicle));
 
-function gameLoop(pacman, ghosts) {
-  // 1. Move Pacman
-  gameBoard.moveCharacter(pacman);
-
-  // 2. Check Ghost collision on the old positions
-  // checkCollision(pacman, ghosts);
-
-  // 3. Move ghosts
-  ghosts.forEach((ghost) => gameBoard.moveCharacter(ghost));
-
-  // 4. Do a new ghost collision check on the new positions
-  // checkCollision(pacman, ghosts);
-
-  // 5. Check if Pacman eats a dot
-  if (gameBoard.objectExist(pacman.pos, OBJECT_TYPE.DOT)) {
+  // 3. Check if Garbageman collects a bin
+  if (gameBoard.objectExist(garbageman.pos, OBJECT_TYPE.BIN)) {
     playAudio(soundDot);
 
-    gameBoard.removeObject(pacman.pos, [OBJECT_TYPE.DOT]);
-    // Remove a dot
-    gameBoard.dotCount--;
+    gameBoard.removeObject(garbageman.pos, [OBJECT_TYPE.BIN]);
+    // Remove a bin
+    gameBoard.binCount--;
     // Add Score
     score += 10;
   }
 
-  // 6. Check if Pacman eats a power pill
-  if (gameBoard.objectExist(pacman.pos, OBJECT_TYPE.PILL)) {
-    playAudio(soundPill);
-
-    gameBoard.removeObject(pacman.pos, [OBJECT_TYPE.PILL]);
-
-    pacman.powerPill = true;
-    score += 50;
-
-    clearTimeout(powerPillTimer);
-    powerPillTimer = setTimeout(
-      () => (pacman.powerPill = false),
-      POWER_PILL_TIME
-    );
-  }
-
-  // 7. Change ghost scare mode depending on powerpill
-  if (pacman.powerPill !== powerPillActive) {
-    powerPillActive = pacman.powerPill;
-    ghosts.forEach((ghost) => (ghost.isScared = pacman.powerPill));
-  }
-
-  // 8. Check if all dots have been eaten
-  if (gameBoard.dotCount === 0) {
+  // 3. Check if all bins have been collected
+  if (gameBoard.binCount === 0) {
     gameWin = true;
-    gameOver(pacman, gameGrid);
+    gameOver(garbageman, gameGrid);
   }
 
-  // 9. Show new score
+  // 4. Show new score
   scoreTable.innerHTML = score;
 
-  //10. Display time elapsed
+  // 5. Display time elapsed
   timerDisplay.innerHTML = `${Math.floor(gameTime / 60).toString().padStart(2, '0')}: ${(gameTime % 60).toString().padStart(2, '0')}`;
 
-  //11. check if garbageman is completely blocked
-  if (gameBoard.isPacmanCompletelyBlocked(pacman))
-    gameOver(pacman, gameGrid);
+  // 6. check if garbageman is completely blocked
+  if (gameBoard.isGarbagemanCompletelyBlocked(garbageman))
+    gameOver(garbageman, gameGrid);
 }
 
 function startGame(difficultyLevel) {
 
-  document.removeEventListener('keydown', e => handleKeyInput(e));
+  document.removeEventListener('keydown', handleKeyInput);
 
   gameTimer = setInterval(() => gameTime++, 1000);
   playAudio(soundGameStart);
 
   gameWin = false;
-  powerPillActive = false;
   score = 0;
 
   gameBoard.createGrid(LEVEL, difficultyLevel);
 
-  const pacman = new Pacman(2, 287);
-  gameBoard.addObject(287, [OBJECT_TYPE.PACMAN]);
+  const garbageman = new Garbageman(2, 287);
+  gameBoard.addObject(287, [OBJECT_TYPE.GARBAGEMAN]);
   document.addEventListener('keydown', (e) =>
-    pacman.handleKeyInput(e, gameBoard.objectExist.bind(gameBoard))
+    garbageman.handleKeyInput(e, gameBoard.objectExist.bind(gameBoard))
   );
 
 
-  let ghosts = [
-    new Ghost(5, 207, randomMovement, OBJECT_TYPE.BLINKY),
-    new Ghost(4, 228, randomMovement, OBJECT_TYPE.PINKY),
-    new Ghost(3, 249, randomMovement, OBJECT_TYPE.INKY),
-    new Ghost(5, 208, randomMovement, OBJECT_TYPE.BLINKY),
-    new Ghost(4, 227, randomMovement, OBJECT_TYPE.PINKY),
-    new Ghost(3, 247, randomMovement, OBJECT_TYPE.INKY),
-    new Ghost(5, 248, randomMovement, OBJECT_TYPE.BLINKY),
-    new Ghost(4, 229, randomMovement, OBJECT_TYPE.PINKY),
-    new Ghost(3, 209, randomMovement, OBJECT_TYPE.INKY)
+  let vehicles = [
+    new Vehicle(5, 207, randomMovement, OBJECT_TYPE.LORRY),
+    new Vehicle(4, 228, randomMovement, OBJECT_TYPE.TAXI),
+    new Vehicle(3, 249, randomMovement, OBJECT_TYPE.POLICECAR),
+    new Vehicle(5, 208, randomMovement, OBJECT_TYPE.LORRY),
+    new Vehicle(4, 227, randomMovement, OBJECT_TYPE.TAXI),
+    new Vehicle(3, 247, randomMovement, OBJECT_TYPE.POLICECAR),
+    new Vehicle(5, 248, randomMovement, OBJECT_TYPE.LORRY),
+    new Vehicle(4, 229, randomMovement, OBJECT_TYPE.TAXI),
+    new Vehicle(3, 209, randomMovement, OBJECT_TYPE.POLICECAR)
   ];
 
-  ghosts.length = difficultyLevel * 3;
+  vehicles.length = difficultyLevel * 3;
 
   // Gameloop
-  timer = setInterval(() => gameLoop(pacman, ghosts), GLOBAL_SPEED / difficultyLevel);
+  timer = setInterval(() => gameLoop(garbageman, vehicles), GLOBAL_SPEED / difficultyLevel);
 }

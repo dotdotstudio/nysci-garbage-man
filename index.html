@@ -5,16 +5,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css">
-  <title>JS Pacman</title>
+  <title>Garbageman</title>
 </head>
 
 <body>
   <div id="wrapper">
     <div id="landing-page">
+      <div style="text-align: center; margin-top: 5rem;">
+        <div style="max-height: 30px; display: inline-block; margin-right: 10rem;">
+          <p style="color: red; margin: 0;">LAST SCORE</p>
+          <p id="last-score" style="color: white; margin: 0;"></p>
+        </div>
+        <div style="max-height: 30px; display: inline-block; margin-left: 10rem;">
+          <p style="color: red; margin: 0;">HI-SCORE</p>
+          <p id="hi-score" style="color: white; margin: 0;"></p>
+        </div>
+      </div>
       <ul style="list-style: none;position: fixed; bottom: 10rem; right: 15rem;">
-        <li><img id="level-one-selector" style="padding-bottom: 1rem;" src="./images/garbage-pacman-landing-indicator.png" alt=""><img src="./images/level1.png" alt=""></li>
-        <li><img id="level-two-selector" style="padding-bottom: 1rem;" src="./images/garbage-pacman-landing-indicator.png" alt=""><img src="./images/level2.png" alt=""></li>
-        <li><img id="level-three-selector" style="padding-bottom: 1rem;" src="./images/garbage-pacman-landing-indicator.png" alt=""><img src="./images/level3.png" alt=""></li>
+        <li><img id="level-one-selector" style="padding-bottom: 1rem;" src="./images/landing-indicator.png" alt=""><img
+            src="./images/level-one.png" alt=""></li>
+        <li><img id="level-two-selector" style="padding-bottom: 1rem;" src="./images/landing-indicator.png" alt=""><img
+            src="./images/level-two.png" alt=""></li>
+        <li><img id="level-three-selector" style="padding-bottom: 1rem;" src="./images/landing-indicator.png"
+            alt=""><img src="./images/level-three.png" alt=""></li>
       </ul>
     </div>
     <div id="game-page">

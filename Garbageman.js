@@ -1,12 +1,11 @@
 import { OBJECT_TYPE, DIRECTIONS } from './setup';
 
-class Pacman {
+class Garbageman {
   constructor(speed, startPos) {
     this.pos = startPos;
     this.speed = speed;
     this.dir = null;
     this.timer = 0;
-    this.powerPill = false;
     this.rotation = true;
   }
 
@@ -26,8 +25,8 @@ class Pacman {
     // Do we collide with a wall?
     if (
       objectExist(nextMovePos, OBJECT_TYPE.WALL) ||
-      objectExist(nextMovePos, OBJECT_TYPE.GHOSTLAIR) ||
-      objectExist(nextMovePos, OBJECT_TYPE.GHOST)
+      objectExist(nextMovePos, OBJECT_TYPE.VEHICLELAIR) ||
+      objectExist(nextMovePos, OBJECT_TYPE.VEHICLE)
     ) {
       nextMovePos = this.pos;
     }
@@ -36,8 +35,8 @@ class Pacman {
   }
 
   makeMove() {
-    const classesToRemove = [OBJECT_TYPE.PACMAN];
-    const classesToAdd = [OBJECT_TYPE.PACMAN];
+    const classesToRemove = [OBJECT_TYPE.GARBAGEMAN];
+    const classesToAdd = [OBJECT_TYPE.GARBAGEMAN];
 
     return { classesToRemove, classesToAdd };
   }
@@ -47,6 +46,7 @@ class Pacman {
   }
 
   handleKeyInput = (e, objectExist) => {
+    console.log(1234)
     let dir;
 
     if (e.keyCode >= 37 && e.keyCode <= 40) {
@@ -60,18 +60,18 @@ class Pacman {
     this.dir = dir;
   };
 
-  isPacmanCompletelyBlocked(objectExist) {
+  isGarbagemanCompletelyBlocked(objectExist) {
     let dirKeys = Object.keys(DIRECTIONS);
     let isCompletelyBlocked = dirKeys.every(key => {
       let dir = DIRECTIONS[key];
       const correspondingPos = this.pos + dir.movement;
       if (objectExist(correspondingPos, OBJECT_TYPE.WALL) ||
-        objectExist(correspondingPos, OBJECT_TYPE.GHOST) ||
-        objectExist(correspondingPos, OBJECT_TYPE.GHOSTLAIR)) return true;
+        objectExist(correspondingPos, OBJECT_TYPE.VEHICLE) ||
+        objectExist(correspondingPos, OBJECT_TYPE.VEHICLELAIR)) return true;
       else return false;
     })
     return isCompletelyBlocked;
   }
 }
 
-export default Pacman;
+export default Garbageman;
