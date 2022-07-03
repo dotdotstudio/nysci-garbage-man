@@ -37,6 +37,9 @@ let levelSelected = 1;
 
 //shows landing page
 function landing() {
+  document.getElementById("wrapper").style.height = `${window.innerHeight}px`;
+  document.getElementById("wrapper").style.width = `${window.innerWidth}px`;
+
   let lastScore = sessionStorage.getItem('lastScore');
   let hiScore = sessionStorage.getItem('hiScore');
   lastScoreCont.innerHTML = lastScore ?? 0;
@@ -58,9 +61,6 @@ function handleKeyInput(e) {
   } else if (e.keyCode === 40) {
     levelSelected++
   } else if (e.keyCode === 13) {
-    // document.removeEventListener('keydown', (e) =>
-    //   handleKeyInput(e)
-    // );
     landingPage.classList.remove('show');
     landingPage.classList.add('hide');
     gamePage.classList.remove('hide');
@@ -110,9 +110,7 @@ function gameOver(garbageman, grid) {
   clearInterval(gameTimer);
   playAudio(soundGameOver);
 
-  document.removeEventListener('keydown', (e) =>
-    garbageman.handleKeyInput(e, gameBoard.objectExist.bind(gameBoard))
-  );
+  document.removeEventListener('keydown', window.garbagemanEventHandler);
 
   gameBoard.showGameStatus(gameWin);
 
@@ -176,10 +174,9 @@ function startGame(difficultyLevel) {
 
   const garbageman = new Garbageman(2, 287);
   gameBoard.addObject(287, [OBJECT_TYPE.GARBAGEMAN]);
-  document.addEventListener('keydown', (e) =>
-    garbageman.handleKeyInput(e, gameBoard.objectExist.bind(gameBoard))
-  );
-
+  
+  window.garbagemanEventHandler = (e) => garbageman.handleKeyInput(e, gameBoard.objectExist.bind(gameBoard));
+  document.addEventListener('keydown', window.garbagemanEventHandler)
 
   let vehicles = [
     new Vehicle(5, 207, randomMovement, OBJECT_TYPE.LORRY),
