@@ -46,7 +46,6 @@ class Garbageman {
   }
 
   handleKeyInput = (e, objectExist) => {
-    console.log(1234)
     let dir;
 
     if (e.keyCode >= 37 && e.keyCode <= 40) {
