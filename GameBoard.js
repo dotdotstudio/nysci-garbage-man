@@ -1,4 +1,4 @@
-import { GRID_SIZE, CELL_SIZE, OBJECT_TYPE, CLASS_LIST, DIFFICULTY_LEVEL } from './setup';
+import { GRID_SIZE, CELL_SIZE, OBJECT_TYPE, CLASS_LIST, DIFFICULTY_LEVEL, BIN_GAP } from './setup';
 
 class GameBoard {
   constructor(DOMGrid) {
@@ -26,26 +26,28 @@ class GameBoard {
     const indexOfBlank = CLASS_LIST.indexOf(OBJECT_TYPE.BLANK);
 
     let originalBinCount = 0;
+    let binGapPlusOne = 1;
+    switch (difficultyLevel) {
+      case DIFFICULTY_LEVEL.LEVEL_ONE:
+        binGapPlusOne += BIN_GAP.LEVEL_ONE;
+        break;
+      case DIFFICULTY_LEVEL.LEVEL_TWO:
+        binGapPlusOne += BIN_GAP.LEVEL_TWO;
+        break;
+      case DIFFICULTY_LEVEL.LEVEL_THREE:
+        binGapPlusOne += BIN_GAP.LEVEL_THREE;
+        break;
+    }
+
     level.forEach((square) => {
       if (square === indexOfBin) {
         if (!difficultyLevel) {
           square = indexOfBlank
         } else {
-          switch (difficultyLevel) {
-            case DIFFICULTY_LEVEL.LEVEL_ONE:
-              if (originalBinCount % 3 !== 0)
-                square = indexOfBlank
-              break;
-            case DIFFICULTY_LEVEL.LEVEL_TWO:
-              if (originalBinCount % 2 !== 0)
-                square = indexOfBlank
-              break;
-            case DIFFICULTY_LEVEL.LEVEL_THREE:
-              square = indexOfBin
-              break;
-          }
-          originalBinCount++;
+          if (originalBinCount % binGapPlusOne !== 0)
+            square = indexOfBlank
         }
+        originalBinCount++;
       }
 
       const div = document.createElement('div');
