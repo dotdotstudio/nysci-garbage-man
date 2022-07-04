@@ -1,4 +1,4 @@
-import { LEVEL, OBJECT_TYPE } from './setup';
+import { DIFFICULTY_LEVEL, LEVEL, OBJECT_TYPE, SPEED_DIVISOR, WARNING_TIME } from './setup';
 import { randomMovement } from './vehiclemoves';
 // Classes
 import GameBoard from './GameBoard';
@@ -125,7 +125,7 @@ function gameOver(garbageman, grid) {
   setTimeout(() => location.reload(), 5000);
 }
 
-function gameLoop(garbageman, vehicles) {
+function gameLoop(garbageman, vehicles, difficultyLevel) {
   // 1. Move Garbageman
   gameBoard.moveCharacter(garbageman);
 
@@ -154,6 +154,21 @@ function gameLoop(garbageman, vehicles) {
 
   // 5. Display time elapsed
   timerDisplay.innerHTML = `${Math.floor(gameTime / 60).toString().padStart(2, '0')}: ${(gameTime % 60).toString().padStart(2, '0')}`;
+  switch (difficultyLevel) {
+    case DIFFICULTY_LEVEL.LEVEL_ONE:
+      if (gameTime > WARNING_TIME.LEVEL_ONE)
+        timerDisplay.style.color = 'red';
+      break;
+    case DIFFICULTY_LEVEL.LEVEL_TWO:
+      if (gameTime > WARNING_TIME.LEVEL_TWO)
+        timerDisplay.style.color = 'red';
+      break;
+
+    case DIFFICULTY_LEVEL.LEVEL_THREE:
+      if (gameTime > WARNING_TIME.LEVEL_THREE)
+        timerDisplay.style.color = 'red';
+      break;
+  }
 
   // 6. check if garbageman is completely blocked
   if (gameBoard.isGarbagemanCompletelyBlocked(garbageman))
@@ -174,7 +189,7 @@ function startGame(difficultyLevel) {
 
   const garbageman = new Garbageman(2, 287);
   gameBoard.addObject(287, [OBJECT_TYPE.GARBAGEMAN]);
-  
+
   window.garbagemanEventHandler = (e) => garbageman.handleKeyInput(e, gameBoard.objectExist.bind(gameBoard));
   document.addEventListener('keydown', window.garbagemanEventHandler)
 
@@ -191,7 +206,19 @@ function startGame(difficultyLevel) {
   ];
 
   vehicles.length = difficultyLevel * 3;
+  let speedDivisor;
+  switch (difficultyLevel) {
+    case DIFFICULTY_LEVEL.LEVEL_ONE:
+      speedDivisor = SPEED_DIVISOR.LEVEL_ONE
+      break;
+    case DIFFICULTY_LEVEL.LEVEL_TWO:
+      speedDivisor = SPEED_DIVISOR.LEVEL_TWO
+      break;
+    case DIFFICULTY_LEVEL.LEVEL_THREE:
+      speedDivisor = SPEED_DIVISOR.LEVEL_THREE
+      break;
+  }
 
   // Gameloop
-  timer = setInterval(() => gameLoop(garbageman, vehicles), GLOBAL_SPEED / difficultyLevel);
+  timer = setInterval(() => gameLoop(garbageman, vehicles, difficultyLevel), GLOBAL_SPEED / speedDivisor);
 }
