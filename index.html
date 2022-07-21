@@ -36,8 +36,46 @@
       <div id="game"></div>
       <div id="game-timer" class="game-timer">00:00</div>
       <div id="score"></div>
+      <div id="result" style="background-color: white; color:black; z-index: 2; position: absolute; transform: translate(-50%, -50%); left: 50%; top: 50%; font-family: sans-serif;">
+        <h1 id="result-status"style="margin: 50px 100px 50px 100px;font-size: 50px;
+        font-weight: 200;"></h1>
+        <div class="result-box">
+          <div style="display:flex;">
+            <div id="item">
+              <div>
+                Trash collected
+              </div>
+              <div>
+                Time take
+              </div>
+              <div>
+                Resident Complaints
+              </div>
+              <div>
+                Rat Sightings
+              </div>
+              <div>
+                Crash
+              </div>
+            </div>
+            <div id="item" style="margin-left: 10px;">
+              <div id="level-score" style="color: black;"></div>
+              <div id="level-time"></div>
+              <div id="resident-complaints"></div>
+              <div id="rat-sighting"></div>
+              <div id="crash"></div>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-around;" >
+            <button id="back-to-menu">
+              Back to Menu
+            </button>
+            <button id="next-level">
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
   <script src="./index.js"></script>
 </body>
 
