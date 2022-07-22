@@ -296,7 +296,7 @@ nextLevel.addEventListener("click", () => {
 });
 
 function endOfLevel() {
-  setTimeout(backToMainMenu, 4000);
+  setTimeout(backToMainMenu, 6000);
 }
 
 function backToMainMenu() {
