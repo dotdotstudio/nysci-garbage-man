@@ -131,7 +131,12 @@ function gameOver(garbageman, grid, gameCrash, restart) {
   ratSightings.innerHTML =
     gameTime * (Math.floor(Math.random() * (17 - 11)) + 11);
   crash.innerHTML = gameCrash;
-  if (restart === undefined) {
+
+  //This will reset the game back to the menu
+  endOfLevel();
+
+  //This shows buttons that don't work on the arcade set up
+  /*if (restart === undefined) {
     if (levelSelected === 3) {
       nextLevel.remove();
     } else {
@@ -139,7 +144,7 @@ function gameOver(garbageman, grid, gameCrash, restart) {
     }
   } else {
     nextLevel.innerHTML = "Try Again";
-  }
+  }*/
 
   if (gameCrash === 0) {
     if (gameTime <= 120) {
@@ -289,3 +294,11 @@ nextLevel.addEventListener("click", () => {
     startGame(levelSelected);
   }
 });
+
+function endOfLevel() {
+  setTimeout(backToMainMenu, 6000);
+}
+
+function backToMainMenu() {
+  location.reload();
+}
